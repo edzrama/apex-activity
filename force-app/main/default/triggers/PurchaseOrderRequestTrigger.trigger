@@ -6,7 +6,7 @@ if(Trigger.isBefore) {
     	}
         if(Trigger.isUpdate) {
             // Activity 1
-			PurchaseOrderRequestHandler.setCompleteDatetoToday(Trigger.new);   
+			PurchaseOrderRequestHandler.setCompleteDatetoToday(Trigger.new, Trigger.OldMap);   
         }
     }
     

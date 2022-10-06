@@ -1,8 +1,8 @@
 public class PurchaseOrderRequestHandler {
     // Activity 1
-	public static void setCompleteDatetoToday(List<Purchase_Order_Request__c> lPORequest) {
+	public static void setCompleteDatetoToday(List<Purchase_Order_Request__c> lPORequest, Map<ID,Purchase_Order_Request__c> mPOROld) {
         for(Purchase_Order_Request__c por : lPORequest) {
-            if(por.Status__c == 'Completed') {
+            if(por.Status__c != mPOROld.get(por.id).Status__c && por.Status__c == 'Completed') {
                 // set completed date to current date
                 por.Completed_Date__c = System.today();
             }
