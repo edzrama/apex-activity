@@ -2,9 +2,9 @@ trigger PurchaseOrderModificationTrigger on Purchase_Order_Modification__c (befo
     if(Trigger.isBefore) {
         if(Trigger.isInsert) {
             // Activity 8
-			PurchaseOrderModificationTriggerHandler.ValidatePOMCreate(Trigger.new);
+			PurchaseOrderModificationTriggerHandler.validatePOMCreate(Trigger.new);
             // Activity 9
-            PurchaseOrderModificationTriggerHandler.ValidatePOMPending(Trigger.new);
+            PurchaseOrderModificationTriggerHandler.validatePOMPending(Trigger.new);
         }
     }
 
@@ -16,7 +16,7 @@ if(Trigger.isAfter) {
     
     	if(Trigger.isdelete) {
 			// Activity 7
-			PurchaseOrderModificationTriggerHandler.SaveDeletePOM(Trigger.old);
+			PurchaseOrderModificationTriggerHandler.saveDeletePOM(Trigger.old);
         }
     }
     

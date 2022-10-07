@@ -39,8 +39,8 @@ public class PurchaseOrderRequestHandler {
             }     
     	}
         if(!sPORIds.isEmpty()) {
-        // Get all Po Mod using PO Request ID Set
-        for(Purchase_Order_Modification__c pom: [SELECT Id,Status__c FROM Purchase_Order_Modification__c Where Purchase_Order_Request__c IN :sPORIds]) {
+        // Get all Po Mod using PO Request ID Set (exclude already closed)
+        for(Purchase_Order_Modification__c pom: [SELECT Id FROM Purchase_Order_Modification__c Where Purchase_Order_Request__c IN :sPORIds AND Status__c != 'Closed']) {
             // add records to update
             lPOModToUpdate.add(new Purchase_Order_Modification__c(Id=pom.Id, Status__c='Closed'));
         }

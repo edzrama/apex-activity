@@ -1,6 +1,6 @@
 public class ContactTriggerHandler {
     // Activity 4
-	public static void UpdateAccountEmail(List<Contact> lContact, Map<ID, Contact> mContactOld) {
+	public static void updateAccountEmail(List<Contact> lContact, Map<ID, Contact> mContactOld) {
         list<Account> lAccountToUpdate = new list<Account>();
         Map<ID, Contact> lAcctIDstoConEmail = new Map<Id,Contact>();
         for(Contact con : lContact) {

@@ -13,7 +13,7 @@ public class PurchaseOrderModificationTriggerHandler {
 }
     
     // Activity 7
-    public static void SaveDeletePOM(List<Purchase_Order_Modification__c> mPOModOld) {
+    public static void saveDeletePOM(List<Purchase_Order_Modification__c> mPOModOld) {
         list<Purchase_Order_Request__c> lPORequestToUpdate = new list<Purchase_Order_Request__c>();
         Map<ID, Purchase_Order_Modification__c > mPOReqToPOMod = new Map<ID, Purchase_Order_Modification__c >();
         for(Purchase_Order_Modification__c pom : mPOModOld) {
@@ -38,34 +38,39 @@ public class PurchaseOrderModificationTriggerHandler {
 }
     
         // Activity 8
-    public static void ValidatePOMCreate(List<Purchase_Order_Modification__c> lPOMod) {
+    public static void validatePOMCreate(List<Purchase_Order_Modification__c> lPOMod) {
         Map<ID, Purchase_Order_Modification__c > mPOReqToPOMod = new Map<ID, Purchase_Order_Modification__c >();
+        Map<ID, Integer> mPOReqToPOMCount = new Map<ID, integer>();
         for(Purchase_Order_Modification__c pom : lPOMod) {
+            if(mPOReqToPOMCount.containsKey(pom.Purchase_Order_Request__c)){
+                mPOReqToPOMCount.put(pom.Purchase_Order_Request__c, mPOReqToPOMCount.get(pom.Purchase_Order_Request__c) + 1);
+            }
+            else {
+                mPOReqToPOMCount.put(pom.Purchase_Order_Request__c,1);
+            }
                mPOReqToPOMod.put(pom.Purchase_Order_Request__c, pom);
         }
         if(!mPOReqToPOMod.isEmpty()) {
         for(Purchase_Order_Request__c por: [SELECT Id, (SELECT Id FROM Purchase_Order_Modifications__r) FROM Purchase_Order_Request__c WHERE ID IN :mPOReqToPOMod.keyset()]){
-            // if more than 3, in case there's already more than 3 records for PO Mod
-            if (por.Purchase_Order_Modifications__r.size() >= 3) {
+            // if there's already 3 or more records for PO Mod / OR / if the record we are inserting + existing is more than 3
+            if (por.Purchase_Order_Modifications__r.size() >= 3 || (mPOReqToPOMCount.get(por.id) + por.Purchase_Order_Modifications__r.size() >3)) {
                 // Prevent Insert when PO Mods are more than or equal to 3
                 mPOReqToPOMod.get(por.id).addError('You cannot Insert more than 3 PO Modifications for a single PO Request');
             }
         } 
         }
 }
-    
      // Activity 9
-    public static void ValidatePOMPending(List<Purchase_Order_Modification__c> lPOMod) {
+    public static void validatePOMPending(List<Purchase_Order_Modification__c> lPOMod) {
         Map<ID, Purchase_Order_Modification__c > mPOReqToPOMod = new Map<ID, Purchase_Order_Modification__c >();
         for(Purchase_Order_Modification__c pom : lPOMod) {
                mPOReqToPOMod.put(pom.Purchase_Order_Request__c, pom);
         }
         if(!mPOReqToPOMod.isEmpty()) {
         for(Purchase_Order_Request__c por: [SELECT Id, (SELECT Id FROM Purchase_Order_Modifications__r) FROM Purchase_Order_Request__c WHERE ID IN (SELECT Purchase_Order_Request__c FROM Purchase_Order_Modification__c WHERE Status__c = 'Pending' AND Purchase_Order_Request__c IN :mPOReqToPOMod.keyset()) ]){
-            // if more than 3, in case there's already more than 3 records for PO Mod
             if (por.Purchase_Order_Modifications__r.size() != 0) {
-                // Prevent Insert when PO Mods are more than or equal to 3
-                mPOReqToPOMod.get(por.id).addError('Cannot Create PO Modification when pending records exist');
+                // Prevent Insert when PO Mod has existing pending record
+                mPOReqToPOMod.get(por.id).addError('Cannot Create PO Modification when pending record exists');
             }
         }  
         }
