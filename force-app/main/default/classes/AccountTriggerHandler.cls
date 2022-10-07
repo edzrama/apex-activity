@@ -11,7 +11,7 @@ public class AccountTriggerHandler {
         if(!lContactToInsert.isEmpty()) {
             insert lContactToInsert;
         }    
-}
+    }
     
     // Activity 3
     public static void updateContactEmail(List<Account> lAccount, Map<ID, Account> mAcctOld) {
@@ -20,21 +20,21 @@ public class AccountTriggerHandler {
         // Store Accounts where email changed
         for(Account acct : lAccount) {
             if(acct.Email__c != mAcctOld.get(acct.id).Email__c ) {
-               mAccounts.put(acct.ID, acct);
+                mAccounts.put(acct.ID, acct);
             }
         }
         
         if(!mAccounts.isEmpty()) {
-        // used extracted set as where clause
-        for(Contact con : [SELECT ID, Email, AccountId from Contact WHERE AccountId IN :mAccounts.keyset()]) {
-            // Assign Account email to contact(s) email
-            if (mAccounts.get(con.AccountId).Email__c != con.Email) {
-            lContactToUpdate.add(new Contact(ID= con.ID, Email = mAccounts.get(con.AccountId).Email__c));
+            // used extracted set as where clause
+            for(Contact con : [SELECT ID, Email, AccountId from Contact WHERE AccountId IN :mAccounts.keyset()]) {
+                // Assign Account email to contact(s) email
+                if (mAccounts.get(con.AccountId).Email__c != con.Email) {
+                    lContactToUpdate.add(new Contact(ID= con.ID, Email = mAccounts.get(con.AccountId).Email__c));
+                }
+            }
+            if(!lContactToUpdate.isEmpty()) {
+                update lContactToUpdate;
             }
         }
-        if(!lContactToUpdate.isEmpty()) {
-            update lContactToUpdate;
-        }
-        }
-}
+    }
 }
